@@ -5,9 +5,9 @@ A fast, concurrent file finder.
 ## Features
 
 ```sh
-go run go-fd -h
-go run go-fd dir to-search
-go run go-fd -p dir to-search
+go run main.go -h
+go run main.go dir to-search
+go run main.go -p dir to-search
 ```
 
 You can search a file by names or with regex.    
