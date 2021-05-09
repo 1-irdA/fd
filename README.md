@@ -16,7 +16,7 @@ You can search a file by names or with regex.
 
 ## Benchmark
 
-Comparison was realised between my concurrent find function and the [Walk function](https://golang.org/pkg/path/filepath/#Walk) from Golang.    
+Comparison was realised between my concurrent recursive find function and the [Walk function](https://golang.org/pkg/path/filepath/#Walk) from Golang.    
 
 - Walk function
 
