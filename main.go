@@ -2,12 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	fd "github.com/1-irdA/go-fd/src"
-	"github.com/1-irdA/go-fd/src/color"
-	"github.com/1-irdA/go-fd/src/help"
+	"github.com/1-irdA/go-fd/src/utils"
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -17,11 +16,12 @@ func main() {
 	flag.Parse()
 
 	if *h {
-		help.Help()
+		utils.Help()
 	} else if len(os.Args[1:]) >= 2 {
 		finder := fd.New(os.Args[1:], *r)
 		finder.Find()
 	} else {
-		fmt.Println(color.Red + "Needs 2 args, -h for more details" + color.White)
+		color.Red("Needs 2 args, -h for more details")
+		os.Exit(1)
 	}
 }

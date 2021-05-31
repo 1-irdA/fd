@@ -1,9 +1,7 @@
 package src
 
 import (
-	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,7 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/1-irdA/go-fd/src/color"
+	"github.com/1-irdA/go-fd/src/utils"
+	"github.com/fatih/color"
 )
 
 type Finder interface {
@@ -34,7 +33,7 @@ func New(args []string, r bool) *find {
 	path, searched := getPathAndSearch(args, r)
 	_, err := os.Lstat(path)
 	if err != nil {
-		log.Fatal(color.Red + "Invalid path" + color.White)
+		utils.Err("Invalid path")
 	}
 	return &find{path: path, searched: searched, reg: r}
 }
@@ -53,7 +52,7 @@ func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
 	dirs, err := os.ReadDir(dirPath)
 	if err != nil {
-		log.Fatal(color.Red + "Error during files browsing" + color.White)
+		utils.Err("Error during files browsing")
 	}
 	for _, entry := range dirs {
 		atomic.AddUint32(&f.nbFiles, 1)
@@ -67,13 +66,13 @@ func (f *find) worker(dirPath string) {
 }
 
 func (f *find) details() {
-	fmt.Printf(color.Yellow+"Files browsed %d, search duration : %v\n"+color.White, f.nbFiles, f.elapsed)
+	color.Yellow("Files browsed %d, search duration : %v\n", f.nbFiles, f.elapsed)
 }
 
 func (f *find) checkRegIfNeed() {
 	if f.reg {
 		if _, err := regexp.Compile(f.searched); err != nil {
-			log.Fatal(color.Red + "Invalid regex : " + f.searched + color.White)
+			utils.Err("Invalid regex : " + f.searched)
 		}
 	}
 }
@@ -83,7 +82,7 @@ func (f *find) correspond(entry fs.DirEntry) bool {
 	if f.reg {
 		match, err := regexp.MatchString(f.searched, entry.Name())
 		if err != nil {
-			log.Fatal(color.Red + "Regex error" + color.White)
+			utils.Err("Regex error")
 		}
 		if match {
 			result = true
@@ -98,7 +97,7 @@ func (f *find) correspond(entry fs.DirEntry) bool {
 
 func (f *find) printPath(dirPath string, entry fs.DirEntry) {
 	if path, err := filepath.Rel(f.path, path.Join(dirPath, entry.Name())); err == nil {
-		fmt.Println(color.Green + path + color.White)
+		color.Green(path)
 	}
 }
 

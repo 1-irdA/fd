@@ -1,9 +1,9 @@
-package help
+package utils
 
-import "fmt"
+import "github.com/fatih/color"
 
 func Help() {
-	fmt.Println(`
+	color.Cyan(`
 go-fd is a fast tool to find a directory, a file following some rules.
 	
 Usage:
