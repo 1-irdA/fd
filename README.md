@@ -23,4 +23,4 @@ Comparison was realised between my concurrent recursive find function and the [W
 
 - Concurrent find function
 
-![alt text](assets/browse.PNG)
+![alt text](assets/compare.PNG)
