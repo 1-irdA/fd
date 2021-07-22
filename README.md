@@ -15,7 +15,7 @@ You can search a file by names or with regex.
 
 ## Benchmark
 
-Find in all D:// drive :    
+Find in all D:// drive      
 
 ![drive](assets/drive.PNG)
 
