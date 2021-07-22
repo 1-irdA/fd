@@ -6,8 +6,7 @@ A fast, concurrent file finder.
 
 ```sh
 go run main.go -h
-go run main.go -p=dir -s=to-search
-go run main.go -r -p=dir -s=to-search
+go run main.go -p=dir -s=to-search [-r] [-a]
 ```
 
 You can search a file by names or with regex.    
