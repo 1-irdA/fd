@@ -16,11 +16,11 @@ Usage:
 	go run go-fd <dir> <to-search>
 	go run go-fd -p <dir> <to-search>
 The commands are:
-	-h		Display this message
-	-r		Search files that correspond to following regex
-	-p      Path to search
-	-s      Searched value
-	-a      Display absolute path`)
+	-h	Display this message
+	-r	Search files that correspond to following regex
+	-p	Path to search
+	-s	Searched value
+	-a	Display absolute path`)
 }
 
 var (
