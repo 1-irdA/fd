@@ -44,10 +44,10 @@ func (f *find) Find() {
 
 func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
-	dirs, err := os.ReadDir(dirPath)
-	if err != nil {
-		printErr("Error during files browsing")
-	}
+
+	folder, _ := os.Open(dirPath)
+	dirs, _ := folder.ReadDir(-1)
+
 	for _, entry := range dirs {
 		atomic.AddUint32(&f.nbFiles, 1)
 		if entry.IsDir() {
@@ -57,6 +57,8 @@ func (f *find) worker(dirPath string) {
 			f.printPath(dirPath, entry)
 		}
 	}
+
+	folder.Close()
 }
 
 func (f *find) details() {

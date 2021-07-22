@@ -11,16 +11,20 @@ go run main.go -p=dir -s=to-search [-r] [-a]
 
 You can search a file by names or with regex.    
 
-![alt text](assets/reg.PNG)
+![regex](assets/reg.PNG)
 
 ## Benchmark
+
+Find in all D:// drive :    
+
+![drive](assets/drive.PNG)
 
 Comparison was realised between my concurrent recursive find function and the [Walk function](https://golang.org/pkg/path/filepath/#Walk) from Golang.    
 
 - Walk function
 
-![alt text](assets/walk.PNG)
+![walk](assets/walk.PNG)
 
 - Concurrent find function
 
-![alt text](assets/compare.PNG)
+![find](assets/compare.PNG)
