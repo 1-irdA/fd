@@ -19,16 +19,17 @@ type find struct {
 	searched string
 	nbFiles  uint32
 	reg      bool
+	absolute bool
 	wg       sync.WaitGroup
 	elapsed  time.Duration
 }
 
-func New(path string, searched string, pattern bool) *find {
+func New(path string, searched string, pattern bool, absolute bool) *find {
 	_, err := os.Lstat(path)
 	if err != nil {
 		printErr("Invalid path")
 	}
-	return &find{path: path, searched: searched, reg: pattern}
+	return &find{path: path, searched: searched, reg: pattern, absolute: absolute}
 }
 
 func (f *find) Find() {
@@ -89,7 +90,9 @@ func (f *find) correspond(entry fs.DirEntry) bool {
 }
 
 func (f *find) printPath(dirPath string, entry fs.DirEntry) {
-	if path, err := filepath.Rel(f.path, path.Join(dirPath, entry.Name())); err == nil {
+	if f.absolute {
+		color.Green(path.Join(dirPath, entry.Name()))
+	} else if path, err := filepath.Rel(f.path, path.Join(dirPath, entry.Name())); err == nil {
 		color.Green(path)
 	}
 }
