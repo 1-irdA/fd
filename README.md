@@ -6,13 +6,13 @@ A fast, concurrent file finder.
 
 ```sh
 go run main.go -h
-go run main.go dir to-search
-go run main.go -p dir to-search
+go run main.go -p=dir -s=to-search
+go run main.go -r -p=dir -s=to-search
 ```
 
 You can search a file by names or with regex.    
 
-![alt text](assets/regex.PNG)
+![alt text](assets/reg.PNG)
 
 ## Benchmark
 
@@ -24,4 +24,4 @@ Comparison was realised between my concurrent recursive find function and the [W
 
 - Concurrent find function
 
-![alt text](assets/concurrency.PNG)
+![alt text](assets/browse.PNG)

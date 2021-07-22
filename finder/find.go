@@ -1,4 +1,4 @@
-package src
+package finder
 
 import (
 	"io/fs"
@@ -11,14 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/1-irdA/go-fd/src/utils"
 	"github.com/fatih/color"
 )
-
-type Finder interface {
-	Find()
-	details()
-}
 
 type find struct {
 	path     string
@@ -29,13 +23,12 @@ type find struct {
 	elapsed  time.Duration
 }
 
-func New(args []string, r bool) *find {
-	path, searched := getPathAndSearch(args, r)
+func New(path string, searched string, pattern bool) *find {
 	_, err := os.Lstat(path)
 	if err != nil {
-		utils.Err("Invalid path")
+		printErr("Invalid path")
 	}
-	return &find{path: path, searched: searched, reg: r}
+	return &find{path: path, searched: searched, reg: pattern}
 }
 
 func (f *find) Find() {
@@ -52,7 +45,7 @@ func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
 	dirs, err := os.ReadDir(dirPath)
 	if err != nil {
-		utils.Err("Error during files browsing")
+		printErr("Error during files browsing")
 	}
 	for _, entry := range dirs {
 		atomic.AddUint32(&f.nbFiles, 1)
@@ -72,7 +65,7 @@ func (f *find) details() {
 func (f *find) checkRegIfNeed() {
 	if f.reg {
 		if _, err := regexp.Compile(f.searched); err != nil {
-			utils.Err("Invalid regex : " + f.searched)
+			printErr("Invalid regex : " + f.searched)
 		}
 	}
 }
@@ -82,7 +75,7 @@ func (f *find) correspond(entry fs.DirEntry) bool {
 	if f.reg {
 		match, err := regexp.MatchString(f.searched, entry.Name())
 		if err != nil {
-			utils.Err("Regex error")
+			printErr("Regex error")
 		}
 		if match {
 			result = true
@@ -101,9 +94,7 @@ func (f *find) printPath(dirPath string, entry fs.DirEntry) {
 	}
 }
 
-func getPathAndSearch(args []string, reg bool) (string, string) {
-	if reg {
-		return args[1], args[2]
-	}
-	return args[0], args[1]
+func printErr(msg string) {
+	color.Red(msg)
+	os.Exit(1)
 }
