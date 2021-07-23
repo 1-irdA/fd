@@ -8,6 +8,24 @@ A fast, concurrent file finder.
 go get github.com/1-irdA/go-fd
 ```
 
+```go
+package main
+
+import "github.com/1-irdA/go-fd/finder"
+
+func main() {
+	options := finder.Options{
+		File:     true,
+		Dir:      false,
+		Regex:    false,
+		Absolute: true,
+		Bench:    false,
+	}
+	fd := finder.New("", "Memoire_GARROUSTE", options)
+	fd.Find()
+}
+```
+
 ## Features
 
 ```sh
