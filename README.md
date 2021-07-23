@@ -2,11 +2,17 @@
 
 A fast, concurrent file finder.   
 
+# Usage
+
+```sh
+go get github.com/1-irdA/go-fd
+```
+
 ## Features
 
 ```sh
 go run main.go -h
-go run main.go -p=dir -s=to-search [-r] [-a]
+go run main.go [-p=path] -s=to-search [-f] [-d] [-a] [-b] [-r]
 ```
 
 You can search a file by names or with regex.    
