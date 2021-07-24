@@ -18,14 +18,13 @@ type find struct {
 	path     string
 	searched string
 	nbFiles  uint32
-	Paths    []string
 	opts     Options
 	wg       sync.WaitGroup
 	elapsed  time.Duration
 }
 
 func New(path string, searched string, options Options) *find {
-	checkParamsAndOpts(searched, options)
+	checkParamsAndOpts(path, searched, options)
 	return &find{path: path, searched: searched, opts: options}
 }
 
@@ -35,42 +34,35 @@ func (f *find) Find() {
 	f.launch()
 }
 
-func checkParamsAndOpts(searched string, opts Options) {
-	if searched == "" {
+func checkParamsAndOpts(path, searched string, opts Options) {
+	if path == "" {
+		printErr("Needs location to search")
+	} else if searched == "" {
 		printErr("Needs value to search")
 	} else if !opts.Dir && !opts.File {
-		printErr("Needs to search files, folders or both")
+		printErr("Needs to search files [-f], folders [-d] or both")
 	}
 }
 
 func (f *find) launch() {
 	start := time.Now()
-	f.wg.Add(1)
-
-	if f.path == "" {
-		f.checkEverywhere()
-	} else {
-		_, err := os.Lstat(f.path)
-		if err != nil {
-			printErr("Invalid path")
-		}
-		f.worker(f.path)
+	_, err := os.Lstat(f.path)
+	if err != nil {
+		printErr("Invalid path")
 	}
-
+	f.wg.Add(1)
+	f.worker(f.path)
 	f.wg.Wait()
 	f.elapsed = time.Since(start)
-}
-
-func (f *find) checkEverywhere() {
-	for _, drive := range getDrives() {
-		f.worker(drive)
-	}
 }
 
 func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
 
 	folder, _ := os.Open(dirPath)
+
+	defer folder.Close()
+
 	dirs, _ := folder.ReadDir(-1)
 
 	for _, entry := range dirs {
@@ -78,17 +70,13 @@ func (f *find) worker(dirPath string) {
 		if entry.IsDir() {
 			if f.correspond(entry) {
 				f.printPath(dirPath, entry, color.New(color.FgBlue))
-				f.Paths = append(f.Paths, dirPath)
 			}
 			f.wg.Add(1)
 			go f.worker(path.Join(dirPath, entry.Name()))
 		} else if f.correspond(entry) {
 			f.printPath(dirPath, entry, color.New(color.FgGreen))
-			f.Paths = append(f.Paths, filepath.Join(dirPath, entry.Name()))
 		}
 	}
-
-	folder.Close()
 }
 
 func (f *find) details() {
@@ -125,17 +113,6 @@ func (f *find) checkName(entry fs.DirEntry) (result bool) {
 		result = match
 	} else if strings.Contains(entry.Name(), f.searched) {
 		result = true
-	}
-	return
-}
-
-func getDrives() (drives []string) {
-	for _, drive := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
-		f, err := os.Open(string(drive) + ":/")
-		if err == nil {
-			drives = append(drives, string(drive)+"://")
-			f.Close()
-		}
 	}
 	return
 }
