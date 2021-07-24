@@ -19,9 +19,9 @@ func main() {
 		Dir:      false,
 		Regex:    false,
 		Absolute: true,
-		Bench:    false,
+		Bench:    true,
 	}
-	fd := finder.New("", "Memoire_GARROUSTE", options)
+	fd := finder.New("D:/", "main.cpp", options)
 	fd.Find()
 }
 ```
