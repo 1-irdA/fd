@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/fatih/color"
@@ -34,16 +35,6 @@ func (f *find) Find() {
 	f.launch()
 }
 
-func checkParamsAndOpts(path, searched string, opts Options) {
-	if path == "" {
-		printErr("Needs location to search")
-	} else if searched == "" {
-		printErr("Needs value to search")
-	} else if !opts.Dir && !opts.File {
-		printErr("Needs to search files [-f], folders [-d] or both")
-	}
-}
-
 func (f *find) launch() {
 	start := time.Now()
 	_, err := os.Lstat(f.path)
@@ -58,16 +49,25 @@ func (f *find) launch() {
 
 func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
+	file, oErr := os.Open(dirPath)
 
-	folder, _ := os.Open(dirPath)
+	if oErr != nil {
+		abs, _ := filepath.Abs(dirPath)
+		printErr("cannot access to " + abs)
+	}
 
-	defer folder.Close()
+	defer file.Close()
 
-	dirs, _ := folder.ReadDir(-1)
+	dirs, rErr := file.ReadDir(-1)
+
+	if rErr != nil {
+		abs, _ := filepath.Abs(dirPath)
+		printErr("cannot access to " + abs)
+	}
 
 	for _, entry := range dirs {
 		atomic.AddUint32(&f.nbFiles, 1)
-		if entry.IsDir() {
+		if entry.IsDir() && !isHidden(filepath.Join(dirPath, entry.Name())) {
 			if f.correspond(entry) {
 				f.printPath(dirPath, entry, color.New(color.FgBlue))
 			}
@@ -123,6 +123,30 @@ func (f *find) printPath(dirPath string, entry fs.DirEntry, c *color.Color) {
 	} else if path, err := filepath.Rel(f.path, path.Join(dirPath, entry.Name())); err == nil {
 		c.Println(path)
 	}
+}
+
+func checkParamsAndOpts(path, searched string, opts Options) {
+	if path == "" {
+		printErr("Needs location to search")
+	} else if searched == "" {
+		printErr("Needs value to search")
+	} else if !opts.Dir && !opts.File {
+		printErr("Needs to search files [-f], folders [-d] or both")
+	}
+}
+
+func isHidden(path string) bool {
+	pointer, err := syscall.UTF16PtrFromString(path)
+	if err != nil {
+		return false
+	}
+
+	attributes, err := syscall.GetFileAttributes(pointer)
+	if err != nil {
+		return false
+	}
+
+	return attributes&syscall.FILE_ATTRIBUTE_HIDDEN != 0
 }
 
 func printErr(msg string) {
