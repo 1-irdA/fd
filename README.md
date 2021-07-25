@@ -21,8 +21,7 @@ func main() {
 		Absolute: true,
 		Bench:    true,
 	}
-	fd := finder.New("D:/", "main.cpp", options)
-	fd.Find()
+	finder.New("D:/", "main.cpp", options).Find()
 }
 ```
 

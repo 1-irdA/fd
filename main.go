@@ -48,8 +48,7 @@ func main() {
 			Absolute: *absolute,
 			Bench:    *bench,
 		}
-		fd := finder.New(*path, *searched, options)
-		fd.Find()
+		finder.New(*path, *searched, options).Find()
 	} else {
 		printHelp()
 	}
