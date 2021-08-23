@@ -5,13 +5,13 @@ A fast, concurrent file finder.
 # Usage
 
 ```sh
-go get github.com/1-irdA/go-fd
+go get github.com/1-irdA/fd
 ```
 
 ```go
 package main
 
-import "github.com/1-irdA/go-fd/finder"
+import "github.com/1-irdA/fd/finder"
 
 func main() {
 	options := finder.Options{
