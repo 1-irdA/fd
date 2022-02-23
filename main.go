@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/1-irdA/go-fd/finder"
+	"github.com/1-irdA/fd/finder"
 	"github.com/fatih/color"
 )
 
