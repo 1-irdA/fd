@@ -11,17 +11,17 @@ go get github.com/1-irdA/fd
 ```go
 package main
 
-import "github.com/1-irdA/fd/finder"
+import "github.com/1-irdA/fd"
 
 func main() {
-	options := finder.Options{
+	options := fd.Options{
 		File:     true,
 		Dir:      false,
 		Regex:    false,
 		Absolute: true,
 		Bench:    true,
 	}
-	finder.New("D:/", "main.cpp", options).Find()
+	fd.New("D:/", "main.cpp", options).Find()
 }
 ```
 

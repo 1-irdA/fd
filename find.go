@@ -1,4 +1,4 @@
-package finder
+package fd
 
 import (
 	"io/fs"
@@ -24,17 +24,20 @@ type find struct {
 	elapsed  time.Duration
 }
 
+// Create an instance of find
 func New(path string, searched string, options Options) *find {
 	checkParamsAndOpts(path, searched, options)
 	return &find{path: path, searched: searched, opts: options}
 }
 
+// Check regex if need and search file following condfig
 func (f *find) Find() {
-	defer f.details()
+	defer f.bench()
 	f.checkRegIfNeed()
 	f.launch()
 }
 
+// Launch search following config
 func (f *find) launch() {
 	start := time.Now()
 	_, err := os.Lstat(f.path)
@@ -47,6 +50,7 @@ func (f *find) launch() {
 	f.elapsed = time.Since(start)
 }
 
+// Concurrent worker
 func (f *find) worker(dirPath string) {
 	defer f.wg.Done()
 	file, oErr := os.Open(dirPath)
@@ -79,12 +83,14 @@ func (f *find) worker(dirPath string) {
 	}
 }
 
-func (f *find) details() {
+// Display benchmark if regex option is true
+func (f *find) bench() {
 	if f.opts.Bench {
 		color.Yellow("Files browsed %d, search duration : %v\n", f.nbFiles, f.elapsed)
 	}
 }
 
+// Check regex if regex option is true
 func (f *find) checkRegIfNeed() {
 	if f.opts.Regex {
 		if _, err := regexp.Compile(f.searched); err != nil {
@@ -93,6 +99,7 @@ func (f *find) checkRegIfNeed() {
 	}
 }
 
+// Check if entry correspond with options
 func (f *find) correspond(entry fs.DirEntry) (result bool) {
 	if f.opts.File && f.opts.Dir {
 		result = f.checkName(entry)
@@ -104,6 +111,7 @@ func (f *find) correspond(entry fs.DirEntry) (result bool) {
 	return
 }
 
+// Check if entry name correspond to options
 func (f *find) checkName(entry fs.DirEntry) (result bool) {
 	if f.opts.Regex {
 		match, err := regexp.MatchString(f.searched, entry.Name())
@@ -117,6 +125,7 @@ func (f *find) checkName(entry fs.DirEntry) (result bool) {
 	return
 }
 
+// Print path relative or absolute following options
 func (f *find) printPath(dirPath string, entry fs.DirEntry, c *color.Color) {
 	if f.opts.Absolute {
 		c.Println(path.Join(dirPath, entry.Name()))
@@ -125,6 +134,7 @@ func (f *find) printPath(dirPath string, entry fs.DirEntry, c *color.Color) {
 	}
 }
 
+// Check if user add good parameters
 func checkParamsAndOpts(path, searched string, opts Options) {
 	if path == "" {
 		printErr("Needs location to search")
@@ -135,6 +145,7 @@ func checkParamsAndOpts(path, searched string, opts Options) {
 	}
 }
 
+// Check if entry is hidden or not
 func isHidden(path string) bool {
 	pointer, err := syscall.UTF16PtrFromString(path)
 	if err != nil {
@@ -149,6 +160,7 @@ func isHidden(path string) bool {
 	return attributes&syscall.FILE_ATTRIBUTE_HIDDEN != 0
 }
 
+// Print err in red
 func printErr(msg string) {
 	color.Red(msg)
 	os.Exit(1)
