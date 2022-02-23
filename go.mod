@@ -1,4 +1,4 @@
-module github.com/1-irdA/go-fd
+module github.com/1-irdA/fd
 
 go 1.16
 
