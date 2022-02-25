@@ -11,17 +11,13 @@ go get github.com/1-irdA/fd
 ```go
 package main
 
-import "github.com/1-irdA/fd"
+import (
+	"github.com/1-irdA/fd"
+)
 
 func main() {
-	options := fd.Options{
-		File:     true,
-		Dir:      false,
-		Regex:    false,
-		Absolute: true,
-		Bench:    true,
-	}
-	fd.New("D:/", "main.cpp", options).Find()
+	config := fd.New("E:/Developpement", "^.*\\.sql$", true)
+	fd.Fd(config).Find()
 }
 ```
 
