@@ -51,7 +51,7 @@ func (f *find) worker(wg *sync.WaitGroup, path string) {
 	dir, err := os.Open(path)
 
 	if err != nil {
-		log.Fatal(fmt.Printf("Cannot access to %s", path))
+		log.Print(fmt.Printf("Cannot access to %s\n", path))
 	}
 	defer dir.Close()
 
