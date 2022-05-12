@@ -23,9 +23,4 @@ func main() {
 
 ## Features
 
-```sh
-go run main.go -h
-go run main.go -p=path -s=to-search [-f] [-d] [-a] [-b] [-r]
-```
-
 You can search a file or directory by names or with regex.    
