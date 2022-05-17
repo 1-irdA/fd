@@ -48,18 +48,12 @@ func (f *find) Find() {
 
 func (f *find) worker(wg *sync.WaitGroup, path string) {
 	defer wg.Done()
-	dir, err := os.Open(path)
+	dir, _ := os.Open(path)
 
-	if err != nil {
-		log.Print(fmt.Printf("Cannot access to %s\n", path))
-	}
 	defer dir.Close()
 
-	dirs, err := dir.Readdir(-1)
+	dirs, _ := dir.Readdir(-1)
 
-	if err != nil {
-		log.Fatal(fmt.Printf("Cannot open %s", path))
-	}
 	for _, entry := range dirs {
 		if f.isMatch(entry.Name()) {
 			fmt.Println(filepath.Join(path, entry.Name()))
