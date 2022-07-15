@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -23,19 +23,19 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	dir, errOp := os.Open(path)
 
 	if errOp != nil {
-		return
+		log.Fatal(errOp)
 	}
 	defer func(dir *os.File) {
 		err := dir.Close()
 		if err != nil {
-			return
+			log.Fatal(err)
 		}
 	}(dir)
 
 	dirs, errRead := dir.Readdir(-1)
 
 	if errRead != nil {
-		return
+		log.Fatal(errRead)
 	}
 	for _, entry := range dirs {
 		if isMatch(config, entry) {
@@ -48,14 +48,14 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	}
 }
 
-func canRecurse(config *config, entry fs.FileInfo) bool {
+func canRecurse(config *config, entry os.FileInfo) bool {
 	if (config.Hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), ".") {
 		return true
 	}
 	return false
 }
 
-func isMatch(config *config, current fs.FileInfo) bool {
+func isMatch(config *config, current os.FileInfo) bool {
 	var ok bool
 
 	if !config.Hidden && strings.HasPrefix(current.Name(), ".") {
