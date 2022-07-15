@@ -25,7 +25,12 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	if errOp != nil {
 		return
 	}
-	defer dir.Close()
+	defer func(dir *os.File) {
+		err := dir.Close()
+		if err != nil {
+			return
+		}
+	}(dir)
 
 	dirs, errRead := dir.Readdir(-1)
 
@@ -33,24 +38,24 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 		return
 	}
 	for _, entry := range dirs {
-		if match(config, entry) {
+		if isMatch(config, entry) {
 			fmt.Println(filepath.Join(path, entry.Name()))
 		}
-		if entry.IsDir() && config.Recurse && recurse(config, entry) {
+		if entry.IsDir() && config.Recurse && canRecurse(config, entry) {
 			wg.Add(1)
 			go walk(wg, filepath.Join(path, entry.Name()), config)
 		}
 	}
 }
 
-func recurse(config *config, entry fs.FileInfo) bool {
+func canRecurse(config *config, entry fs.FileInfo) bool {
 	if (config.Hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), ".") {
 		return true
 	}
 	return false
 }
 
-func match(config *config, current fs.FileInfo) bool {
+func isMatch(config *config, current fs.FileInfo) bool {
 	var ok bool
 
 	if !config.Hidden && strings.HasPrefix(current.Name(), ".") {

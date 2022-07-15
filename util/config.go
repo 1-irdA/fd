@@ -17,7 +17,15 @@ type config struct {
 
 func NewConfig(search, path string, file, dir, recurse, hidden bool) *config {
 	_, err := regexp.Compile(search)
-	return &config{Search: search, Path: path, Regex: err == nil, File: file, Dir: dir, Recurse: recurse, Hidden: hidden}
+	return &config{
+		Search:  search,
+		Path:    path,
+		Regex:   err == nil,
+		File:    file,
+		Dir:     dir,
+		Recurse: recurse,
+		Hidden:  hidden,
+	}
 }
 
 func BindArgs(args []string) (search, path string) {
