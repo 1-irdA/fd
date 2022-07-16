@@ -9,13 +9,13 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "fd",
-	Short: "fd is a file and folder finder",
-	Long: `A fast file and folder finder built in Go.
+	Short: "fd is a file and folders finder",
+	Long: `A fast files and folders finder built in Go.
 			Complete documentation is available at https://github.com/garrou/fd`,
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&hidden, "hidden", "c", false, "Print hidden file or folder")
+	rootCmd.PersistentFlags().BoolVarP(&hidden, "hidden", "c", false, "Print hidden files or folders")
 	rootCmd.PersistentFlags().BoolVarP(&recurse, "recurse", "r", false, "Search recursively")
 }
 

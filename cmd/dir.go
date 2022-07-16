@@ -5,8 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var folderCmd = &cobra.Command{
-	Use:   "folder name|regex [path]",
+var dirCmd = &cobra.Command{
+	Use:   "dir name|regex [path]",
 	Short: "Find folders by name or regex",
 	Long:  `Find folders by name or regex`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -15,7 +15,7 @@ var folderCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(folderCmd)
+	rootCmd.AddCommand(dirCmd)
 }
 
 func findFolder(args []string) {
