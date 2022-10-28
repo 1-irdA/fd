@@ -30,10 +30,12 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	dir, errOp := os.Open(path)
 
 	if errOp != nil {
-		log.Fatal(errOp)
+		log.Println(errOp)
+		return
 	}
 	defer func(dir *os.File) {
 		err := dir.Close()
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -42,7 +44,8 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	dirs, errRead := dir.Readdir(-1)
 
 	if errRead != nil {
-		log.Fatal(errRead)
+		log.Println(errRead)
+		return
 	}
 	for _, entry := range dirs {
 		if isMatch(config, entry) {
