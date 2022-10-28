@@ -15,8 +15,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&hidden, "hidden", "c", false, "Print hidden files or folders")
+	rootCmd.PersistentFlags().BoolVarP(&hidden, "hidden", "i", false, "Print hidden files or folders")
 	rootCmd.PersistentFlags().BoolVarP(&recurse, "recurse", "r", false, "Search recursively")
+	rootCmd.PersistentFlags().BoolVarP(&count, "count", "c", false, "Count occurrences")
 }
 
 func Execute() {

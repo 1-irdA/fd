@@ -20,6 +20,6 @@ func init() {
 
 func findFolder(args []string) {
 	search, path := util.BindArgs(args)
-	config := util.NewConfig(search, path, false, true, recurse, hidden)
+	config := util.NewConfig(search, path, false, true, recurse, hidden, count)
 	util.Search(config)
 }

@@ -13,9 +13,10 @@ type config struct {
 	Dir     bool
 	Hidden  bool
 	Recurse bool
+	Count   bool
 }
 
-func NewConfig(search, path string, file, dir, recurse, hidden bool) *config {
+func NewConfig(search, path string, file, dir, recurse, hidden, count bool) *config {
 	_, err := regexp.Compile(search)
 	return &config{
 		Search:  search,
@@ -25,6 +26,7 @@ func NewConfig(search, path string, file, dir, recurse, hidden bool) *config {
 		Dir:     dir,
 		Recurse: recurse,
 		Hidden:  hidden,
+		Count:   count,
 	}
 }
 

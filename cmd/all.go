@@ -8,7 +8,8 @@ import (
 var (
 	hidden  bool
 	recurse bool
-	allCmd = &cobra.Command{
+	count   bool
+	allCmd  = &cobra.Command{
 		Use:   "all name|regex [path]",
 		Short: "Find files or folders by name or regex",
 		Long:  `Find files of folders by name or regex`,
@@ -24,6 +25,6 @@ func init() {
 
 func find(args []string) {
 	search, path := util.BindArgs(args)
-	config := util.NewConfig(search, path, true, true, recurse, hidden)
+	config := util.NewConfig(search, path, true, true, recurse, hidden, count)
 	util.Search(config)
 }

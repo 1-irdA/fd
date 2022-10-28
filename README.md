@@ -7,5 +7,5 @@ A fast, concurrent files and folders finder.
 ```sh
 fd -h
 fd [all|file|dir] -h
-fd [all|file|dir] [main.cpp|.*.cpp$] [D:/] [-r|--recurse] [-c|--hidden]
+fd [all|file|dir] [main.cpp|.*.cpp$] [D:/] [-r|--recurse] [-i|--hidden]  [-c|--count]
 ```

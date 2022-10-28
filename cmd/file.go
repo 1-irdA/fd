@@ -24,6 +24,6 @@ func init() {
 
 func findFile(args []string) {
 	search, path := util.BindArgs(args)
-	config := util.NewConfig(search, path, true, false, recurse, hidden)
+	config := util.NewConfig(search, path, true, false, recurse, hidden, count)
 	util.Search(config)
 }

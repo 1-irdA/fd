@@ -8,7 +8,10 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
+
+var occur uint32
 
 func Search(config *config) {
 	wg := sync.WaitGroup{}
@@ -16,6 +19,10 @@ func Search(config *config) {
 	wg.Add(1)
 	go walk(&wg, config.Path, config)
 	wg.Wait()
+
+	if config.Count {
+		fmt.Println(fmt.Sprintf("%d occurrences", occur))
+	}
 }
 
 func walk(wg *sync.WaitGroup, path string, config *config) {
@@ -40,6 +47,10 @@ func walk(wg *sync.WaitGroup, path string, config *config) {
 	for _, entry := range dirs {
 		if isMatch(config, entry) {
 			fmt.Println(filepath.Join(path, entry.Name()))
+
+			if config.Count {
+				atomic.AddUint32(&occur, 1)
+			}
 		}
 		if entry.IsDir() && config.Recurse && canRecurse(config, entry) {
 			wg.Add(1)
