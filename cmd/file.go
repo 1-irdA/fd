@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/garrou/fd/util"
+	"github.com/garrou/fd/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -18,12 +18,11 @@ var (
 )
 
 func init() {
-	fileCmd.Flags().BoolVarP(&ext, "extension", "e", false, "Print file by extension")
 	rootCmd.AddCommand(fileCmd)
 }
 
 func findFile(args []string) {
-	search, path := util.BindArgs(args)
-	config := util.NewConfig(search, path, true, false, recurse, hidden, count)
-	util.Search(config)
+	search, path := lib.BindArgs(args)
+	config := lib.NewConfig(search, path, true, false, recurse, hidden, count)
+	lib.Search(config)
 }

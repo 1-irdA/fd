@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/garrou/fd/util"
+	"github.com/garrou/fd/lib"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,7 @@ func init() {
 }
 
 func find(args []string) {
-	search, path := util.BindArgs(args)
-	config := util.NewConfig(search, path, true, true, recurse, hidden, count)
-	util.Search(config)
+	search, path := lib.BindArgs(args)
+	config := lib.NewConfig(search, path, true, true, recurse, hidden, count)
+	lib.Search(config)
 }
