@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	runtime.GOMAXPROCS(2)
+	runtime.GOMAXPROCS(runtime.NumCPU() / 4)
 	cmd.Execute()
 }
