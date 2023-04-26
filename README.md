@@ -1,11 +1,10 @@
 # fd
 
-A fast, concurrent files and folders finder.   
+A fast, concurrent files finder.   
 
 ## Commands
 
 ```sh
 fd -h
-fd [all|file|dir] -h
-fd [all|file|dir] [main.cpp|.*.cpp$] [D:/] [-r|--recurse] [-i|--hidden]  [-c|--count]
+fd [flags] [search] [path]
 ```
