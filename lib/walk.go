@@ -105,7 +105,7 @@ func (cg *config) checkFile(path string) {
 	}
 	for _, name := range names {
 		style := style{name: name, path: path, nameColor: Green, pathColor: SkyBlue}
-		path := fmt.Sprintf("%s%c%s", path, os.PathSeparator, name)
+		path := filepath.Join(path, name)
 		info, err := os.Lstat(path)
 
 		if err != nil {
