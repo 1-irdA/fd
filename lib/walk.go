@@ -90,14 +90,10 @@ func (cg *config) checkFile(path string) {
 	f, err := os.Open(path)
 
 	if err != nil {
-		fmt.Printf("%signore %s\n", Red.String(), path)
+		fmt.Printf("%signore %s\n", Red, path)
 		return
 	}
 	defer f.Close()
-
-	if info, _ := f.Stat(); !info.IsDir() {
-		return
-	}
 	names, err := f.Readdirnames(-1)
 
 	if err != nil {
@@ -109,7 +105,7 @@ func (cg *config) checkFile(path string) {
 		info, err := os.Lstat(path)
 
 		if err != nil {
-			fmt.Printf("%signore %s\n", Red.String(), path)
+			fmt.Printf("%signore %s\n", Red, path)
 			return
 		}
 		if info.IsDir() && cg.recurse && cg.isRecursive(info) {
@@ -131,10 +127,9 @@ func (cg *config) checkFile(path string) {
 }
 
 func (cg *config) launch() {
-	_, err := os.Lstat(cg.path)
 
-	if err != nil {
-		fmt.Printf("%signore %s\n", Red.String(), cg.path)
+	if _, err := os.Lstat(cg.path); err != nil {
+		fmt.Printf("%signore %s\n", Red, cg.path)
 		return
 	}
 	defer close(cg.state.visit)
