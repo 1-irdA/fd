@@ -15,7 +15,6 @@ import (
 type config struct {
 	search    string
 	path      string
-	routine   uint
 	pattern   bool
 	hidden    bool
 	recurse   bool
@@ -44,14 +43,13 @@ type Walker interface {
 }
 
 // NewWalker init a walker
-func NewWalker(args []string, routine uint, recurse, hidden, count, pattern, extension, time bool) Walker {
+func NewWalker(args []string, recurse, hidden, count, pattern, extension, time bool) Walker {
 
 	search, path := checkArgs(args)
 
 	config := &config{
 		search:    search,
 		path:      path,
-		routine:   routine,
 		pattern:   pattern,
 		recurse:   recurse,
 		hidden:    hidden,
@@ -65,9 +63,6 @@ func NewWalker(args []string, routine uint, recurse, hidden, count, pattern, ext
 
 func (cg *config) checkConfig() *config {
 
-	if cg.routine < 10 || cg.routine > 100 {
-		log.Fatal("invalide number of routine, -h for more informations")
-	}
 	if cg.pattern {
 		if _, err := regexp.Compile(cg.search); err != nil {
 			log.Fatalf("%s invalide pattern", cg.search)
@@ -137,7 +132,7 @@ func (cg *config) launch() {
 	cg.state.active.Add(1)
 	cg.state.visit <- cg.path
 
-	for i := 0; i < int(cg.routine); i++ {
+	for i := 0; i < 50; i++ {
 		go cg.walk()
 	}
 	cg.state.active.Wait()
