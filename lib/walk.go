@@ -22,6 +22,7 @@ type config struct {
 	extension bool
 	time      bool
 	occur     uint32
+	exclude   string
 	state     state
 }
 
@@ -43,7 +44,7 @@ type Walker interface {
 }
 
 // NewWalker init a walker
-func NewWalker(args []string, recurse, hidden, count, pattern, extension, time bool) Walker {
+func NewWalker(args []string, recurse, hidden, count, pattern, extension, time bool, exclude string) Walker {
 
 	search, path := checkArgs(args)
 
@@ -56,6 +57,7 @@ func NewWalker(args []string, recurse, hidden, count, pattern, extension, time b
 		count:     count,
 		extension: extension,
 		time:      time,
+		exclude:   exclude,
 		state:     state{visit: make(chan string, 1024)},
 	}
 	return config.checkConfig()
@@ -103,7 +105,7 @@ func (cg *config) checkFile(path string) {
 			fmt.Printf("%signore %s\n", Red, path)
 			return
 		}
-		if info.IsDir() && cg.recurse && cg.isRecursive(info) {
+		if info.IsDir() && cg.isRecursive(info) && cg.isNotExclude(info) {
 			cg.state.active.Add(1)
 			select {
 			case cg.state.visit <- path:
@@ -156,16 +158,23 @@ func (cg *config) Search() {
 	}
 }
 
-func (cg *config) isRecursive(entry os.FileInfo) bool {
-	return (cg.hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), ".")
+func (cg *config) isNotExclude(entry os.FileInfo) bool {
+	if cg.exclude == "" {
+		return true
+	}
+	return !strings.Contains(entry.Name(), cg.exclude)
 }
 
-func (cg *config) isMatch(current os.FileInfo) bool {
+func (cg *config) isRecursive(entry os.FileInfo) bool {
+	return cg.recurse && (cg.hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), ".")
+}
+
+func (cg *config) isMatch(entry os.FileInfo) bool {
 	if cg.pattern {
-		ok, _ := regexp.MatchString(cg.search, current.Name())
+		ok, _ := regexp.MatchString(cg.search, entry.Name())
 		return ok
 	} else if cg.extension {
-		return filepath.Ext(current.Name()) == cg.search
+		return filepath.Ext(entry.Name()) == cg.search
 	}
-	return strings.Contains(current.Name(), cg.search)
+	return strings.Contains(entry.Name(), cg.search)
 }
