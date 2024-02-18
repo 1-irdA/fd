@@ -166,7 +166,7 @@ func (cg *config) isNotExclude(entry os.FileInfo) bool {
 }
 
 func (cg *config) isRecursive(entry os.FileInfo) bool {
-	return cg.recurse && (cg.hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), ".")
+	return cg.recurse && ((cg.hidden && strings.HasPrefix(entry.Name(), ".")) || !strings.HasPrefix(entry.Name(), "."))
 }
 
 func (cg *config) isMatch(entry os.FileInfo) bool {
