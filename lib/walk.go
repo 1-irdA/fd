@@ -162,7 +162,7 @@ func (cg *config) isNotExclude(entry os.FileInfo) bool {
 	if cg.exclude == "" {
 		return true
 	}
-	return !strings.Contains(entry.Name(), cg.exclude)
+	return entry.Name() != cg.exclude
 }
 
 func (cg *config) isRecursive(entry os.FileInfo) bool {
