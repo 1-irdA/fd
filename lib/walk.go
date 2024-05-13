@@ -35,8 +35,12 @@ type print struct {
 	name, path string
 }
 
-func (p print) Print() {
-	fmt.Println(fmt.Sprintf("%s%s%c%s%s", SkyBlue, p.path, os.PathSeparator, Green, p.name))
+func (p print) print(info os.FileInfo) {
+	if info.IsDir() {
+		fmt.Println(fmt.Sprintf("%s%s%c%s%s", SkyBlue, p.path, os.PathSeparator, SkyBlue, p.name))
+	} else {
+		fmt.Println(fmt.Sprintf("%s%s%c%s%s", SkyBlue, p.path, os.PathSeparator, Green, p.name))
+	}
 }
 
 type Walker interface {
@@ -114,7 +118,7 @@ func (cg *config) checkFile(path string) {
 				cg.checkFile(path)
 			}
 		} else if cg.isMatch(info) {
-			print.Print()
+			print.print(info)
 
 			if cg.count {
 				atomic.AddUint32(&cg.occur, 1)
