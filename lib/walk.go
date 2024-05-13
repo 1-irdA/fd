@@ -174,7 +174,7 @@ func (cg *config) isMatch(entry os.FileInfo) bool {
 		ok, _ := regexp.MatchString(cg.search, entry.Name())
 		return ok
 	} else if cg.extension {
-		return filepath.Ext(entry.Name()) == cg.search
+		return strings.EqualFold(filepath.Ext(entry.Name()), cg.search)
 	}
 	return strings.Contains(entry.Name(), cg.search)
 }
