@@ -22,7 +22,7 @@ type config struct {
 	extension bool
 	time      bool
 	occur     uint32
-	exclude   string
+	exclude   []string
 	state     state
 }
 
@@ -61,7 +61,7 @@ func NewWalker(args []string, recurse, hidden, count, pattern, extension, time b
 		count:     count,
 		extension: extension,
 		time:      time,
-		exclude:   exclude,
+		exclude:   strings.Split(exclude, " "),
 		state:     state{visit: make(chan string, 1024)},
 	}
 	return config.checkConfig()
@@ -163,10 +163,15 @@ func (cg *config) Search() {
 }
 
 func (cg *config) isNotExclude(entry os.FileInfo) bool {
-	if cg.exclude == "" {
+	if len(cg.exclude) == 0 {
 		return true
 	}
-	return entry.Name() != cg.exclude
+	for _, ex := range cg.exclude {
+		if ex == entry.Name() {
+			return false
+		}
+	}
+	return true
 }
 
 func (cg *config) isRecursive(entry os.FileInfo) bool {

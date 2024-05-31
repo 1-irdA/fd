@@ -11,9 +11,9 @@ func main() {
 	recurse := flag.Bool("r", false, "find recursively (default: false)")
 	count := flag.Bool("c", false, "count the number of results (default: false)")
 	pattern := flag.Bool("p", false, "search pattern (default: false)")
-	extension := flag.Bool("e", false, "search files with this extension")
-	time := flag.Bool("t", false, "get the execution time")
-	exclude := flag.String("x", "", "exclude matching folder")
+	extension := flag.Bool("e", false, "search files with this extension (default: false)")
+	time := flag.Bool("t", false, "get the execution time (default: false)")
+	exclude := flag.String("x", "", "exclude matching folders (space separated)")
 	flag.Parse()
 
 	walker := lib.NewWalker(
