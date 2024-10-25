@@ -6,7 +6,7 @@ A fast, concurrent files finder.
 
 ```sh
 fd -h
-fd [flags] [search] [path]
+fd [flags] [search]
 ```
 
 ## Examples
@@ -14,8 +14,14 @@ fd [flags] [search] [path]
 ```sh
 # search recursively
 # exclude migrations folder 
-# with extension sql
-fd -r -x=migrations -e sql
+# with extension 'sql'
+fd -x=migrations -e sql
+
+## search recursively
+# with extension 'go'
+# in location parent directory
+# entry who contains 'main'
+fd -e go -l ../ main
 
 # search recursively
 # get search time
@@ -23,5 +29,12 @@ fd -r -x=migrations -e sql
 # exclude node_modules
 # search with pattern '.*Service.*$' 
 # in folder 'anothapp-services'
-fd -r -t -c -x=node_modules -p .*Service.*$ .\anothapp-services
+fd -t -c -x node_modules -p .*Service.*$ -l .\anothapp-services
+
+# search recursively
+# in folder anothapp-services
+# exclude node_modules, models controllers services
+# search with pattern "^*js"
+# search file
+fd -l ..\anothapp-services\ -x "node_modules models controllers services" -p -t f "^*js"
 ```

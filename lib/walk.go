@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -19,10 +20,12 @@ type config struct {
 	hidden    bool
 	recurse   bool
 	count     bool
-	extension bool
-	time      bool
+	extension string
+	bench     bool
 	occur     uint32
 	exclude   []string
+	entryType string
+	location  string
 	state     state
 }
 
@@ -43,25 +46,42 @@ func (p print) print(info os.FileInfo) {
 	}
 }
 
+func handleStop() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for range c {
+			fmt.Print(Default.String())
+			os.Exit(0)
+		}
+	}()
+
+}
+
+func getSearch(args []string) string {
+	if len(args) > 0 {
+		return args[0]
+	}
+	return ""
+}
+
 type Walker interface {
 	Search()
 }
 
 // NewWalker init a walker
-func NewWalker(args []string, recurse, hidden, count, pattern, extension, time bool, exclude string) Walker {
-
-	search, path := checkArgs(args)
-
+func NewWalker(args []string, recurse, hidden, count, pattern, bench bool, extension, exclude, entryType, location string) Walker {
 	config := &config{
-		search:    search,
-		path:      path,
+		search:    getSearch(args),
+		path:      location,
 		pattern:   pattern,
 		recurse:   recurse,
 		hidden:    hidden,
 		count:     count,
 		extension: extension,
-		time:      time,
+		bench:     bench,
 		exclude:   strings.Split(exclude, " "),
+		entryType: entryType,
 		state:     state{visit: make(chan string, 1024)},
 	}
 	return config.checkConfig()
@@ -74,10 +94,34 @@ func (cg *config) checkConfig() *config {
 			log.Fatalf("%s invalide pattern", cg.search)
 		}
 	}
-	if cg.extension && !strings.HasPrefix(cg.search, ".") {
-		cg.search = "." + cg.search
+	if cg.isSearchExt() && !strings.HasPrefix(cg.extension, ".") {
+		cg.extension = "." + cg.extension
+	}
+	if !cg.isSearchFile() && !cg.isSearchDir() {
+		cg.entryType = ""
+	}
+	if path, err := filepath.Abs(cg.location); err != nil {
+		log.Fatalf("%s is not a valid path", path)
+	} else {
+		cg.location = path
 	}
 	return cg
+}
+
+func (cg *config) isSearchExt() bool {
+	return cg.extension != ""
+}
+
+func (cg *config) isSearchAll() bool {
+	return cg.entryType == ""
+}
+
+func (cg *config) isSearchFile() bool {
+	return cg.entryType == "f"
+}
+
+func (cg *config) isSearchDir() bool {
+	return cg.entryType == "d"
 }
 
 func (cg *config) walk() {
@@ -91,7 +135,7 @@ func (cg *config) checkFile(path string) {
 	f, err := os.Open(path)
 
 	if err != nil {
-		fmt.Printf("%signore %s\n", Red, path)
+		// fmt.Printf("%signore %s\n", Red, path)
 		return
 	}
 	defer f.Close()
@@ -109,6 +153,14 @@ func (cg *config) checkFile(path string) {
 			fmt.Printf("%signore %s\n", Red, path)
 			return
 		}
+
+		if cg.isMatch(info) {
+			print.print(info)
+
+			if cg.count {
+				atomic.AddUint32(&cg.occur, 1)
+			}
+		}
 		if info.IsDir() && cg.isRecursive(info) && cg.isNotExclude(info) {
 			cg.state.active.Add(1)
 			select {
@@ -116,12 +168,6 @@ func (cg *config) checkFile(path string) {
 			default:
 				cg.state.active.Done()
 				cg.checkFile(path)
-			}
-		} else if cg.isMatch(info) {
-			print.print(info)
-
-			if cg.count {
-				atomic.AddUint32(&cg.occur, 1)
 			}
 		}
 	}
@@ -135,6 +181,7 @@ func (cg *config) launch() {
 	}
 	defer close(cg.state.visit)
 
+	handleStop()
 	cg.state.active.Add(1)
 	cg.state.visit <- cg.path
 
@@ -148,16 +195,16 @@ func (cg *config) launch() {
 func (cg *config) Search() {
 	var start time.Time
 
-	if cg.time {
+	if cg.bench {
 		start = time.Now()
 	}
 	cg.launch()
 	fmt.Print(Default.String())
 
 	if cg.count {
-		fmt.Printf("%d files\n", cg.occur)
+		fmt.Printf("%d match(es)\n", cg.occur)
 	}
-	if cg.time {
+	if cg.bench {
 		fmt.Printf("%s", time.Since(start))
 	}
 }
@@ -179,11 +226,19 @@ func (cg *config) isRecursive(entry os.FileInfo) bool {
 }
 
 func (cg *config) isMatch(entry os.FileInfo) bool {
+	if (cg.isSearchFile() && entry.IsDir()) ||
+		(cg.isSearchDir() && !entry.IsDir()) ||
+		(cg.isSearchExt() && entry.IsDir()) {
+		return false
+	}
+	match := true
+	if cg.isSearchExt() {
+		match = match && strings.EqualFold(filepath.Ext(entry.Name()), cg.extension)
+	}
 	if cg.pattern {
 		ok, _ := regexp.MatchString(cg.search, entry.Name())
-		return ok
-	} else if cg.extension {
-		return strings.EqualFold(filepath.Ext(entry.Name()), cg.search)
+		return match && ok
 	}
-	return strings.Contains(entry.Name(), cg.search)
+	return match && strings.Contains(entry.Name(), cg.search) &&
+		(cg.isSearchAll() || ((cg.isSearchFile() && !entry.IsDir()) || (cg.isSearchDir() && entry.IsDir())))
 }

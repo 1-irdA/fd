@@ -7,13 +7,15 @@ import (
 )
 
 func main() {
-	hidden := flag.Bool("i", false, "search hidden entries (default: false)")
-	recurse := flag.Bool("r", false, "find recursively (default: false)")
-	count := flag.Bool("c", false, "count the number of results (default: false)")
-	pattern := flag.Bool("p", false, "search pattern (default: false)")
-	extension := flag.Bool("e", false, "search files with this extension (default: false)")
-	time := flag.Bool("t", false, "get the execution time (default: false)")
+	hidden := flag.Bool("i", false, "search hidden entries")
+	recurse := flag.Bool("r", true, "find recursively")
+	count := flag.Bool("c", false, "count the number of results")
+	pattern := flag.Bool("p", false, "search pattern")
+	extension := flag.String("e", "", "search files with extension")
+	bench := flag.Bool("b", false, "get the execution time")
 	exclude := flag.String("x", "", "exclude matching folders (space separated)")
+	entryType := flag.String("t", "", "type of searched entry (f)ile / (d)irectory")
+	location := flag.String("l", ".", "place to search")
 	flag.Parse()
 
 	walker := lib.NewWalker(
@@ -22,9 +24,11 @@ func main() {
 		*hidden,
 		*count,
 		*pattern,
+		*bench,
 		*extension,
-		*time,
 		*exclude,
+		*entryType,
+		*location,
 	)
 	walker.Search()
 }
