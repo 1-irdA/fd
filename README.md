@@ -15,7 +15,7 @@ fd [flags] [search]
 # search recursively
 # exclude migrations folder 
 # with extension 'sql'
-fd -x=migrations -e sql
+fd -x migrations -e sql
 
 ## search recursively
 # with extension 'go'
@@ -27,9 +27,10 @@ fd -e go -l ../ main
 # get search time
 # count result
 # exclude node_modules
-# search with pattern '.*Service.*$' 
+# search with pattern
 # in folder 'anothapp-services'
-fd -t -c -x node_modules -p .*Service.*$ -l .\anothapp-services
+# search this pattern '.*Service.*$' 
+fd -t -c -x node_modules -p -l .\anothapp-services .*Service.*$ 
 
 # search recursively
 # in folder anothapp-services

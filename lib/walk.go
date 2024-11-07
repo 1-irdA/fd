@@ -210,9 +210,6 @@ func (cg *config) Search() {
 }
 
 func (cg *config) isNotExclude(entry os.FileInfo) bool {
-	if len(cg.exclude) == 0 {
-		return true
-	}
 	for _, ex := range cg.exclude {
 		if ex == entry.Name() {
 			return false
@@ -226,7 +223,8 @@ func (cg *config) isRecursive(entry os.FileInfo) bool {
 }
 
 func (cg *config) isMatch(entry os.FileInfo) bool {
-	if (cg.isSearchFile() && entry.IsDir()) ||
+	if !cg.isNotExclude(entry) ||
+		(cg.isSearchFile() && entry.IsDir()) ||
 		(cg.isSearchDir() && !entry.IsDir()) ||
 		(cg.isSearchExt() && entry.IsDir()) {
 		return false
